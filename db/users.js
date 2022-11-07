@@ -7,10 +7,11 @@ const client = require("./client");
 async function createUser({ username, password }) {
   try {
     const { rows: [user] } = await client.query(`
-    id SERIAL PRIMARY KEY
-    username VARCHAR(255) UNIQUE NOT NULL
-    password VARCHAR(255) NOT NULL
-    `[username, password])
+    INSERT INTO users(username, password ) 
+    VALUES($1, $2 ) 
+    ON CONFLICT (username) DO NOTHING 
+    RETURNING *;
+    `,[username, password]);
 
     return user
     
