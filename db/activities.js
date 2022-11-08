@@ -2,6 +2,11 @@ const client = require("./client")
 
 // database functions
 async function getAllActivities() {
+  const { rows } = await client.query(`
+  SELECT * FROM activities;
+`)
+
+return rows
 
 }
 
@@ -41,6 +46,8 @@ async function createActivity({ name, description }) {
 async function updateActivity({ id, ...fields }) {
 
 }
+
+
 
 
 module.exports = {
