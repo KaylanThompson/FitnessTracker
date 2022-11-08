@@ -28,19 +28,23 @@ async function getUser({ username, password }) {
 	try {
 		const {
 			rows: [user]
+
 		} = await client.query(
 			`
       SELECT * FROM users
-      WHERE password=$2
-    `,
-			[username, password]
+      WHERE username=$1
+          `,[username]
 		)
 
-    delete user.password
-		return user
+    if (password == user.password) {
+      delete user.password
+      return user
+
+    }
+
 	} catch (error) {
 		console.log(error)
-		throw error
+
 	}
 }
 
@@ -50,8 +54,8 @@ async function getUserById(userId) {
 			rows: [user]
 		} = await client.query(`
       SELECT * FROM users
-      WHERE id=${userId}
-    `)
+      WHERE id=$1
+    `, [userId])
 		delete user.password
 		return user
 	} catch (error) {
@@ -60,7 +64,20 @@ async function getUserById(userId) {
 	}
 }
 
-async function getUserByUsername(userName) {}
+async function getUserByUsername(userName) {
+  try {
+    const {rows: [user]} = await client.query(`
+    SELECT * from users
+    WHERE username=$1;   
+    `, [userName])
+    
+    return user
+  } catch (error) {
+    console.log(error)
+    throw error
+    
+  }
+}
 
 module.exports = {
 	createUser,
