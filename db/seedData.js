@@ -15,8 +15,7 @@ async function dropTables() {
     console.log("Dropping All Tables...");
 
     await client.query(`
-        DROP TABLE IF EXISTS RoutineActivities;
-        DROP TABLE IF EXISTS routines_activities;
+        DROP TABLE IF EXISTS routine_activities;
         DROP TABLE IF EXISTS routines;
         DROP TABLE IF EXISTS activities;
         DROP TABLE IF EXISTS users;
@@ -59,7 +58,7 @@ async function createTables() {
         )`);
 
     await client.query(`
-        CREATE TABLE routines_activities (
+        CREATE TABLE routine_activities (
           id SERIAL PRIMARY KEY,
           "routineId" INTEGER REFERENCES routines (id),
           "activityId" INTEGER REFERENCES activities (id),
@@ -179,6 +178,7 @@ async function createInitialRoutineActivities() {
   console.log("starting to create routine_activities...");
   const [bicepRoutine, chestRoutine, legRoutine, cardioRoutine] =
     await getRoutinesWithoutActivities();
+
   const [bicep1, bicep2, chest1, chest2, leg1, leg2, leg3] =
     await getAllActivities();
 
