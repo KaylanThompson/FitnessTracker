@@ -102,7 +102,28 @@ async function getAllPublicRoutines() {
 	}
 }
 
-async function getPublicRoutinesByActivity({ id }) {}
+async function getPublicRoutinesByActivity({ id }) {
+	try {
+		const {rows} = await client.query (`
+		SELECT routines.*, username AS "creatorName", "activityId"
+		FROM routines
+		JOIN routine_activities
+		ON routines.id=routine_activities."routineId"
+		JOIN activities
+		ON routine_activities."activityId"=activities.id
+		JOIN users
+		ON routines."creatorId"=users.id
+		WHERE "isPublic"=true AND "activityId"=$1
+
+		`,[id])
+
+		return attachActivitiesToRoutines(rows)
+	} catch (error) {
+		console.log(error)
+		throw error
+		
+	}
+}
 
 async function createRoutine({ creatorId, isPublic, name, goal }) {
 	try {
