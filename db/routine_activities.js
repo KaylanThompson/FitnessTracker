@@ -4,7 +4,7 @@ async function getRoutineActivityById(id){
   try {
     const { rows: [routineActivity] } = await client.query(`
     SELECT *
-    FROM routines_activities
+    FROM routine_activities
     WHERE id=$1;
   `, [id]);
     return routineActivity;
@@ -40,10 +40,11 @@ async function addActivityToRoutine({
 
 async function getRoutineActivitiesByRoutine({id}) {
   try {
-    const { rows } = await client.query(`
-    SELECT * FROM routines_activities;
-    `)
-    return rows
+    const { rows: routine} = await client.query(`
+    SELECT * FROM routine_activities
+    WHERE "routineId"=$1;
+    `,[id]);
+    return routine
     
   } catch (error) {
      console.log(error)
@@ -60,7 +61,7 @@ async function updateRoutineActivity ({id, ...fields}) {
   try {
     if (setString.length > 0) {
       await client.query(`
-        UPDATE routines_activities
+        UPDATE routine_activities
         SET ${ setString }
         WHERE id=${ id }
         RETURNING *;
