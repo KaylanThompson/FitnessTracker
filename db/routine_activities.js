@@ -27,7 +27,7 @@ async function addActivityToRoutine({
     VALUES ($1, $2, $3, $4)
     ON CONFLICT ("routineId", "activityId") DO NOTHING
     RETURNING *;
-    `, [routineId, activityId, count, duration]);
+    `, [routineId, activityId, duration, count]);
     
     return routine;
   } catch (error) {
