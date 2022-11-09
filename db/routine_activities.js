@@ -76,10 +76,37 @@ async function updateRoutineActivity ({id, ...fields}) {
 }
 
 async function destroyRoutineActivity(id) {
+  try {
+    const{rows: [routineActivity]}= await client.query(`
+    DELETE FROM routine_activities
+    WHERE id =$1
+    RETURNING *;`, [id]);
+    return routineActivity;
+    
+  } catch (error) {
+    console.log(error)
+    throw error;
+  }
   
 }
 
 async function canEditRoutineActivity(routineActivityId, userId) {
+  try {
+    const{ rows: [routineActivity]}= await client.query(`
+    SELECT "activityId", users.id
+    FROM routine_activities
+    JOIN routines
+    ON routines.id=routine_activities."routineId"
+    JOIN users
+    ON routines."creatorId"=users.id
+    WHERE "activityId"=$1 AND users.id= $2`,[routineActivityId, userId]);
+    return routineActivity
+    
+  } catch (error) {
+    console.log(error)
+    throw error
+  }
+
 }
 
 module.exports = {
