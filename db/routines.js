@@ -1,5 +1,6 @@
 const client = require("./client")
-	const {attachActivitiesToRoutines} = require("./activities")
+const { attachActivitiesToRoutines } = require("./activities")
+const { addActivityToRoutine } = require("./routine_activities")
 
 async function getRoutineById(id) {
 	try {
@@ -30,9 +31,7 @@ async function getRoutinesWithoutActivities() {
 
 async function getAllRoutines() {
 	try {
-		const {
-			rows
-		} = await client.query(`
+		const { rows } = await client.query(`
     SELECT routines.goal, routines."creatorId", routines."isPublic", routines.id, username AS "creatorName", routines.name
     FROM routines
     JOIN users
@@ -48,16 +47,18 @@ async function getAllRoutines() {
 
 async function getAllRoutinesByUser({ username }) {
 	try {
-		const {
-			rows: [routine]
-		} = await client.query(
+		const { rows } = await client.query(
 			`
-      SELECT  FROM routines
-      WHERE username=$1;
-    `[username]
+			SELECT routines.*, username AS "creatorName"
+			FROM routines
+			JOIN users
+			ON routines."creatorId"=users.id
+			WHERE username=$1
+		`,
+			[username]
 		)
 
-		return routine
+		return addActivityToRoutine(rows)
 	} catch (error) {
 		console.log(error)
 		throw error
@@ -66,30 +67,40 @@ async function getAllRoutinesByUser({ username }) {
 
 async function getPublicRoutinesByUser({ username }) {
 	try {
-		const {
-			rows: [routine]
-		} = await client.query(`
-    SELECT "routineId", routines.name as Routine_Name, activities.name AS Activity_Name, description, users.username AS creatorName, duration, count, "activityId"
-    FROM routines
-    JOIN routine_activities
-    ON routines.id=routine_activities."routineId"
-    JOIN activities
-    ON routine_activities."activityId"=activities.id
-    JOIN users
-    ON routines."creatorId"=users.id
+		const { rows } = await client.query(
+			`
+		SELECT routines.*, username AS "creatorName"
+		FROM routines
+		JOIN users
+		ON routines."creatorId"=users.id
+		WHERE username=$1
+    `,
+			[username]
+		)
 
-    `)
-
-		if (username == routine.creatorId && routine.isPublic === true)
-    return routine
-
+		return addActivityToRoutine(rows)
 	} catch (error) {
 		console.log(error)
 		throw error
 	}
 }
 
-async function getAllPublicRoutines() {}
+async function getAllPublicRoutines() {
+	try {
+		const { rows } = await client.query(`
+	SELECT routines.*, username AS "creatorName"
+	FROM routines
+	JOIN users
+	ON routines."creatorId"=users.id
+	WHERE "isPublic"=true
+	`)
+
+		return attachActivitiesToRoutines(rows)
+	} catch (error) {
+		console.log(error)
+		throw error
+	}
+}
 
 async function getPublicRoutinesByActivity({ id }) {}
 

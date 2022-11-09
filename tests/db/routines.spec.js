@@ -115,7 +115,7 @@ describe("DB Routines", () => {
       `);
   });
 
-  describe("getAllRoutines", () => {
+  xdescribe("getAllRoutines", () => {
 
     it("should include the public routine", async () => {
       const routines = await getAllRoutines();
@@ -211,7 +211,7 @@ describe("DB Routines", () => {
     });
   });
 
-  xdescribe("getAllRoutinesByUser", () => {
+  describe("getAllRoutinesByUser", () => {
 
     it("should get the public routine for the user", async () => {
       const routines = await getAllRoutinesByUser(fakeUser);
