@@ -1,6 +1,5 @@
 const client = require("./client")
 const { attachActivitiesToRoutines } = require("./activities")
-const { addActivityToRoutine } = require("./routine_activities")
 
 async function getRoutineById(id) {
 	try {
@@ -104,7 +103,8 @@ async function getAllPublicRoutines() {
 
 async function getPublicRoutinesByActivity({ id }) {
 	try {
-		const {rows} = await client.query (`
+		const { rows } = await client.query(
+			`
 		SELECT routines.*, username AS "creatorName", "activityId"
 		FROM routines
 		JOIN routine_activities
@@ -115,13 +115,14 @@ async function getPublicRoutinesByActivity({ id }) {
 		ON routines."creatorId"=users.id
 		WHERE "isPublic"=true AND "activityId"=$1
 
-		`,[id])
+		`,
+			[id]
+		)
 
 		return attachActivitiesToRoutines(rows)
 	} catch (error) {
 		console.log(error)
 		throw error
-		
 	}
 }
 
@@ -146,9 +147,38 @@ async function createRoutine({ creatorId, isPublic, name, goal }) {
 	}
 }
 
-async function updateRoutine({ id, ...fields }) {}
+async function updateRoutine({ id, ...fields }) {
+	const setString = Object.keys(fields)
+		.map((key, index) => `"${key}"=$${index + 1}`)
+		.join(", ")
 
-async function destroyRoutine(id) {}
+	if (setString.length === 0) {
+		return
+	}
+
+	try {
+		const {
+			rows: [routine]
+		} = await client.query(
+			`
+		  UPDATE routines
+		  SET ${setString}
+		  WHERE id=${id}
+		  RETURNING *;
+		`,
+			Object.values(fields)
+		)
+
+		return routine
+	} catch (error) {
+		console.log(error)
+		throw error
+	}
+}
+
+async function destroyRoutine(id) {
+	
+}
 
 module.exports = {
 	getRoutineById,
