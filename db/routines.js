@@ -58,7 +58,7 @@ async function getAllRoutinesByUser({ username }) {
 			[username]
 		)
 
-		return addActivityToRoutine(rows)
+		return attachActivitiesToRoutines(rows)
 	} catch (error) {
 		console.log(error)
 		throw error
@@ -73,12 +73,12 @@ async function getPublicRoutinesByUser({ username }) {
 		FROM routines
 		JOIN users
 		ON routines."creatorId"=users.id
-		WHERE username=$1
+		WHERE username=$1 AND "isPublic"=true
     `,
 			[username]
 		)
 
-		return addActivityToRoutine(rows)
+		return attachActivitiesToRoutines(rows)
 	} catch (error) {
 		console.log(error)
 		throw error
