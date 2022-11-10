@@ -4,7 +4,8 @@ const jwt = require("jsonwebtoken")
 const { token } = require("morgan")
 const { JWT_SECRET } = process.env
 
-const { getUserByUsername, createUser } = require("../db")
+const { getUserByUsername, createUser, getUser, getPublicRoutinesByUser } = require("../db")
+const { requireUser } = require("./utils")
 
 // POST /api/users/login
 
@@ -89,18 +90,23 @@ usersRouter.post("/register", async (req, res, next) => {
 
 // GET /api/users/me
 
-usersRouter.get("/me", async (req, res, next) => {
-    const token = jwt.sign(
-        {
-          id: user.id,
-          username: user.username
-        },
-        JWT_SECRET
-      )
-    const authorization = `Authorization: Bearer ${token}`
-    const { auth } = req.body
+usersRouter.get("/me", requireUser, async (req, res, next) => {
 
-})
+ const user = await getUser({username, password})
+
+
+   res.send(user
+   )
+
+
+
+ 
+
+    })
+
+
+
+  
 
 // GET /api/users/:username/routines
 
