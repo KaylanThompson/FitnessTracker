@@ -10,22 +10,27 @@ const { getUserByUsername, createUser } = require("../db")
 usersRouter.post("/login", async (req, res, next) => {
   const { username, password } = req.body
 
-  if (!username || !password) {
-    next({
-      name: "MissingCredentialsError",
-      message: "Please supply both a username and password"
-    })
-  }
+//   if (!username || !password) {
+//     next({
+//       name: "MissingCredentialsError",
+//       message: "Please supply both a username and password"
+//     })
+//   }
 
   try {
     const user = await getUserByUsername(username)
+    console.log(user)
 
-    if (user && user.password == password) {
-      const token = jwt.sign({ id: user.id, username: user.username }, JWT_SECRET, {
-        expiresIn: "7d"
-      })
+    if (user.password == password) {
+
+      const token = jwt.sign({
+        user: {
+            id: user.id,
+            username: user.username
+        }
+    })
       const recoveredData = jwt.verify(token, JWT_SECRET)
-      res.send({ message: "you're logged in!", token: token })
+      res.send({ message: "you're logged in!"})
       return recoveredData
     } else {
       next({
@@ -48,16 +53,24 @@ usersRouter.post("/register", async (req, res, next) => {
     const _user = await getUserByUsername(username)
 
     if (_user) {
-      next({
-        name: "UserExistsError",
-        message: "A user by that username already exists"
+      res.send({
+        error: "UserExistsError",
+        name: "The User Exists",
+        message: "User " + username + " is already taken."
+
       })
     }
 
-    const user = await createUser({
-      username,
-      password
-    })
+    if (password.length < 8) {
+        res.send({
+            error: "TooShortPassword",
+            name: "Password Length Error",
+            message: "Password Too Short!"
+          })
+
+    }
+
+    const user = await createUser({username, password})
 
     const token = jwt.sign(
       {
@@ -72,7 +85,9 @@ usersRouter.post("/register", async (req, res, next) => {
 
     res.send({
       message: "thank you for signing up",
-      token
+      token: token,
+      user: {id: user.id,
+      username: username}
     })
   } catch ({ name, message }) {
     next({ name, message })
