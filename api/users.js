@@ -11,31 +11,29 @@ const { getUserByUsername, createUser } = require("../db")
 usersRouter.post("/login", async (req, res, next) => {
   const { username, password } = req.body
 
-
   try {
     const user = await getUserByUsername(username)
 
-    
     if (user.password == password) {
-        console.log("why is this not working?")
+      console.log("why is this not working?")
     }
 
+    const token = jwt.sign(
+      {
+        id: user.id,
+        username: user.username
+      },
+      JWT_SECRET
+    )
 
-    const token = jwt.sign({
-          id: user.id,
-          username: user.username       
-      }, JWT_SECRET)
-  
-
-          res.send({
-            token: token,
-            message: "you're logged in!",
-            user: {
-                id: user.id,
-                username: user.username
-            },
-                })    
-    
+    res.send({
+      token: token,
+      message: "you're logged in!",
+      user: {
+        id: user.id,
+        username: user.username
+      }
+    })
   } catch (error) {
     console.log(error)
     next(error)
@@ -90,6 +88,19 @@ usersRouter.post("/register", async (req, res, next) => {
 })
 
 // GET /api/users/me
+
+usersRouter.get("/me", async (req, res, next) => {
+    const token = jwt.sign(
+        {
+          id: user.id,
+          username: user.username
+        },
+        JWT_SECRET
+      )
+    const authorization = `Authorization: Bearer ${token}`
+    const { auth } = req.body
+
+})
 
 // GET /api/users/:username/routines
 
