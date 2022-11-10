@@ -1,6 +1,7 @@
 const express = require("express")
 const usersRouter = express.Router()
 const jwt = require("jsonwebtoken")
+const { token } = require("morgan")
 const { JWT_SECRET } = process.env
 
 const { getUserByUsername, createUser } = require("../db")
@@ -10,34 +11,31 @@ const { getUserByUsername, createUser } = require("../db")
 usersRouter.post("/login", async (req, res, next) => {
   const { username, password } = req.body
 
-//   if (!username || !password) {
-//     next({
-//       name: "MissingCredentialsError",
-//       message: "Please supply both a username and password"
-//     })
-//   }
 
   try {
     const user = await getUserByUsername(username)
-    console.log(user)
 
+    
     if (user.password == password) {
-
-      const token = jwt.sign({
-        user: {
-            id: user.id,
-            username: user.username
-        }
-    })
-      const recoveredData = jwt.verify(token, JWT_SECRET)
-      res.send({ message: "you're logged in!"})
-      return recoveredData
-    } else {
-      next({
-        name: "IncorrectCredentialsError",
-        message: "Username or password is incorrect"
-      })
+        console.log("why is this not working?")
     }
+
+
+    const token = jwt.sign({
+          id: user.id,
+          username: user.username       
+      }, JWT_SECRET)
+  
+
+          res.send({
+            token: token,
+            message: "you're logged in!",
+            user: {
+                id: user.id,
+                username: user.username
+            },
+                })    
+    
   } catch (error) {
     console.log(error)
     next(error)
@@ -57,20 +55,18 @@ usersRouter.post("/register", async (req, res, next) => {
         error: "UserExistsError",
         name: "The User Exists",
         message: "User " + username + " is already taken."
-
       })
     }
 
     if (password.length < 8) {
-        res.send({
-            error: "TooShortPassword",
-            name: "Password Length Error",
-            message: "Password Too Short!"
-          })
-
+      res.send({
+        error: "TooShortPassword",
+        name: "Password Length Error",
+        message: "Password Too Short!"
+      })
     }
 
-    const user = await createUser({username, password})
+    const user = await createUser({ username, password })
 
     const token = jwt.sign(
       {
@@ -86,8 +82,7 @@ usersRouter.post("/register", async (req, res, next) => {
     res.send({
       message: "thank you for signing up",
       token: token,
-      user: {id: user.id,
-      username: username}
+      user: { id: user.id, username: username }
     })
   } catch ({ name, message }) {
     next({ name, message })
