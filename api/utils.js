@@ -1,12 +1,12 @@
 function requireUser(req, res, next) {
-    if (!req.user) {
-      // res.send({
-      //   name: "You must be logged in to perform this action",
-      //   message: "You must be logged in to perform this action"
-      // });
-      res.statusCode = 401
-
-    }
+  if (!req.user){
+    res.statusCode = 401
+    res.send({
+      error: "This is an error",
+      message: "You must be logged in to perform this action",
+      name: "Unauthorized Error"
+    })
+  }
     next();
   }
   

@@ -91,16 +91,7 @@ usersRouter.post("/register", async (req, res, next) => {
 
 // GET /api/users/me
 
-usersRouter.get("/me", async (req, res, next) => {
-
-  if (!req.user){
-    res.statusCode = 401
-    res.send({
-      error: "This is an error",
-      message: "You must be logged in to perform this action",
-      name: "Unauthorized Error"
-    })
-  }
+usersRouter.get("/me", requireUser, async (req, res, next) => {
 
   try {
     await getUserById(req.user.id)
