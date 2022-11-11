@@ -29,7 +29,7 @@ const { objectContaining, arrayContaining } = expect
 const { getRoutineById } = require("../../db")
 
 describe("/api/routines", () => {
-  describe("GET /api/routines", () => {
+  xdescribe("GET /api/routines", () => {
     it("Returns a list of public routines, includes the activities with them", async () => {
       const { fakeUser } = await createFakeUserWithToken("Jan")
       const fakeRoutine = await createFakePublicRoutine(
@@ -178,7 +178,7 @@ describe("/api/routines", () => {
     })
   })
 
-  xdescribe("DELETE /api/routines/:routineId (**)", () => {
+  describe("DELETE /api/routines/:routineId (**)", () => {
     it("Hard deletes a routine. Makes sure to delete all the routineActivities whose routine is the one being deleted.", async () => {
       // Create a routine so we can delete it
       const { fakeUser, token } = await createFakeUserWithToken("John")
