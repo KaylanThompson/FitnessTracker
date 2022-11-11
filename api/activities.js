@@ -1,5 +1,5 @@
 const express = require('express');
-const { getAllActivities, createActivity, getActivityById, updateActivity, } = require('../db');
+const { getAllActivities, createActivity, getActivityById, updateActivity, getActivityByName } = require('../db');
 const activitiesRouter = express.Router();
 const { requireUser } = require("./utils")
 
@@ -13,28 +13,26 @@ activitiesRouter.get('/', async (req, res ) =>{
 
 // POST /api/activities
 activitiesRouter.post('/', requireUser, async (req, res, next) => {
-    const {name, description = ""} = req.body;
-
-    const activityData={};
-
+    const {name, description} = req.body
+    const activityData = {name, description};
     try{
-        activityData.name = name
-        activityData.description = description
-        activityData.id = req.user.id
-
-        const activity = await createActivity(activityData);
-
-        res.send(activity);
-
-        if (error) {
-            res.send({error: "An activity with name Push Ups already exists"})
-            
+        const activity = await getActivityByName(name)
+        if (activity) {
+            res.send({error: "string", message:`An activity with name ${name} already exists`, name: "string"})
         }
+
+        const newActivity = await createActivity(activityData);
+
+        res.send(newActivity);
         
 
     } catch({name, message}) {
         next({name, message});
     }
+
+
+    
+
 })
 
 
