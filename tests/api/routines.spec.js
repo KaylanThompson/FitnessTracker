@@ -222,7 +222,7 @@ describe("/api/routines", () => {
     })
   })
 
-  xdescribe("POST /api/routines/:routineId/activities", () => {
+  describe("POST /api/routines/:routineId/activities", () => {
     it("Attaches a single activity to a routine.", async () => {
       const { fakeUser, token } = await createFakeUserWithToken("Jerry")
       const fakeActivity = await createFakeActivity(

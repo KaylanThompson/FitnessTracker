@@ -5,6 +5,10 @@ const {
   createRoutine,
   destroyRoutine,
   getRoutineById,
+  getActivityById,
+  attachActivitiesToRoutines,
+  getRoutineActivitiesByRoutine,
+  addActivityToRoutine
 } = require("../db")
 const { requireUser } = require("./utils")
 
@@ -50,7 +54,7 @@ routinesRouter.patch("/:routineId", requireUser, async (req, res) => {
       const routine = await getRoutineById({ id })
       if (routine.creatorId === req.user.id) {
         const newRoutine = { isPublic, name, goal }
-        console.log(newRoutine, "line 49")
+
         res.send(newRoutine)
       } else {
         res.statusCode = 403
@@ -94,5 +98,36 @@ routinesRouter.delete("/:routineId", requireUser, async (req, res) => {
 })
 
 // POST /api/routines/:routineId/activities
+
+routinesRouter.post("/:routineId/activities", async (req, res) => {
+  const {routineId, activityId, count, duration} = req.body
+  const id = req.params.routineId
+
+  try {
+
+    const routine = await getRoutineActivitiesByRoutine({id})
+    console.log(routine, "this is what a routine looks like")
+    console.log(activityId, "What is this?")
+    if(activityId) {
+      res.send({
+        error: "Already Exists",
+        message: `Activity ID ${activityId} already exists in Routine ID ${routineId}`,
+        name: "Activity Already Exists in Routine"
+      })
+    }
+ 
+    const newRoutine = await addActivityToRoutine({routineId, activityId, count, duration})
+
+
+    
+    res.send(newRoutine)
+    
+  } catch (error) {
+    console.log(error)
+    throw error
+    
+  }
+
+})
 
 module.exports = routinesRouter
