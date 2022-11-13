@@ -17,7 +17,7 @@ usersRouter.post("/login", async (req, res, next) => {
     const user = await getUserByUsername(username)
 
     if (!user.password === password) {
-      res.send({message: "Check your password"})
+      res.send({ message: "Check your password" })
     }
 
     const token = jwt.sign(
@@ -74,7 +74,6 @@ usersRouter.post("/register", async (req, res, next) => {
         username
       },
       JWT_SECRET
-
     )
 
     res.send({
@@ -90,7 +89,6 @@ usersRouter.post("/register", async (req, res, next) => {
 // GET /api/users/me
 
 usersRouter.get("/me", requireUser, async (req, res, next) => {
-
   try {
     await getUserById(req.user.id)
 
