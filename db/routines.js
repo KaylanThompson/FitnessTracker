@@ -12,7 +12,7 @@ async function getRoutineById({id}) {
     `,
 			[id]
 		)
-
+	
 		return routine
 	} catch (error) {
 		console.log(error)

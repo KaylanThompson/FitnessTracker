@@ -8,6 +8,7 @@ const {
   getActivityById,
   attachActivitiesToRoutines,
   getRoutineActivitiesByRoutine,
+  getPublicRoutinesByActivity,
   addActivityToRoutine
 } = require("../db")
 const { requireUser } = require("./utils")
@@ -86,7 +87,6 @@ routinesRouter.delete("/:routineId", requireUser, async (req, res) => {
       res.statusCode = 403
       res.send({
         message: `User ${req.user.username} is not allowed to delete On even days`,
-
         name: "What is this",
         error: "just another day in paradise"
       })
@@ -100,33 +100,33 @@ routinesRouter.delete("/:routineId", requireUser, async (req, res) => {
 // POST /api/routines/:routineId/activities
 
 routinesRouter.post("/:routineId/activities", async (req, res) => {
-  const {routineId, activityId, count, duration} = req.body
   const id = req.params.routineId
-
+  const { routineId, activityId, count, duration} = req.body
+  const returnedRoutine = await getRoutineActivitiesByRoutine({id})
+  const routine = returnedRoutine[0]
+  
   try {
-
-    const routine = await getRoutineActivitiesByRoutine({id})
-    console.log(routine, "this is what a routine looks like")
-    console.log(activityId, "What is this?")
-    if(activityId) {
+    
+    if (routine.activityId === activityId)
+    {
       res.send({
         error: "Already Exists",
-        message: `Activity ID ${activityId} already exists in Routine ID ${routineId}`,
+        message: `Activity ID ${activityId} already exists in Routine ID ${id}`,
         name: "Activity Already Exists in Routine"
       })
-    }
- 
+
+    } else {
+  
     const newRoutine = await addActivityToRoutine({routineId, activityId, count, duration})
-
-
-    
     res.send(newRoutine)
+    }
+    
     
   } catch (error) {
     console.log(error)
-    throw error
-    
-  }
+    throw error 
+  
+}
 
 })
 
