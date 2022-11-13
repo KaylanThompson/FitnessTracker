@@ -1,7 +1,13 @@
 const express = require('express');
-const { getAllActivities, createActivity, getActivityById, updateActivity, getActivityByName, getPublicRoutinesByActivity } = require('../db');
+const { getAllActivities, createActivity, getActivityById, updateActivity, getActivityByName, getPublicRoutinesByActivity} = require('../db');
 const activitiesRouter = express.Router();
 const { requireUser } = require("./utils")
+
+// GET /api/activities
+activitiesRouter.get('/', async (req, res ) =>{
+    const activities = await getAllActivities();
+    res.send(activities);
+});
 
 // GET /api/activities/:activityId/routines
 activitiesRouter.get('/:activityId/routines', async (req, res, next) => {
@@ -13,7 +19,7 @@ activitiesRouter.get('/:activityId/routines', async (req, res, next) => {
         const activity = await getActivityById(id)
         console.log(activity, 'this dont work')
         if(!activity){
-            res.send({error:"this has failed", message:`Activity ${id} not found`, name: " bob"})
+            res.send({error:"this has failed", message:`Activity ${activity} not found`, name: " bob"})
         }
         const routine = await getPublicRoutinesByActivity(activity)
         res.send(routine)
@@ -23,11 +29,6 @@ activitiesRouter.get('/:activityId/routines', async (req, res, next) => {
     }
 })
 
-// GET /api/activities
-activitiesRouter.get('/', async (req, res ) =>{
-    const activities = await getAllActivities();
-    res.send(activities);
-});
 
 // POST /api/activities
 activitiesRouter.post('/', requireUser, async (req, res, next) => {
@@ -47,14 +48,45 @@ activitiesRouter.post('/', requireUser, async (req, res, next) => {
     } catch({name, message}) {
         next({name, message});
     }
+})
 
 
     
 
-})
 
 
 // PATCH /api/activities/:activityId
+
+activitiesRouter.patch('/:activityId', requireUser, async (req, res, next) => {
+    const {activityId} = req.params;
+    const {name, description} = req.body;
+
+    const updateFields = {};
+
+    if (name) {
+        updateFields.name = name;
+    }
+    if (description) {
+        updateFields.description = description;
+    }
+
+    try{
+        const oldActivity = await getActivityById(activityId);
+
+        if (oldActivity.name.id === req.user.id) {
+            const updateActivity = await updateActivity(activityId, updateFields)
+            res.send({activity: updateActivity})
+        } else{
+            next({
+                name: '',
+                message:''
+            })
+        }
+    } catch ({ name, message}) {
+        next({ name, message });
+    }
+
+})
 
 
 module.exports = activitiesRouter;
