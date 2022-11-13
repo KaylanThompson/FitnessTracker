@@ -24,8 +24,8 @@ const {
 
 const { objectContaining } = expect
 
-xdescribe("/api/routine_activities", () => {
-  xdescribe("PATCH /api/routine_activities/:routineActivityId (**)", () => {
+describe("/api/routine_activities", () => {
+  describe("PATCH /api/routine_activities/:routineActivityId (**)", () => {
     it("Updates the count or duration on the routine activity", async () => {
       const { fakeUser, token } = await createFakeUserWithToken("Smith")
       const fakeRoutine = await createFakePublicRoutine(
@@ -96,7 +96,7 @@ xdescribe("/api/routine_activities", () => {
     })
   })
 
-  xdescribe("DELETE /api/routine_activities/:routineActivityId (**)", () => {
+  describe("DELETE /api/routine_activities/:routineActivityId (**)", () => {
     it("Removes an activity from a routine, uses hard delete", async () => {
       const { fakeUser, token } = await createFakeUserWithToken("Linus")
       const fakeRoutine = await createFakePublicRoutine(

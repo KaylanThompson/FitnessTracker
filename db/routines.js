@@ -1,7 +1,7 @@
 const client = require("./client")
 const { attachActivitiesToRoutines } = require("./activities")
 
-async function getRoutineById(id) {
+async function getRoutineById({id}) {
 	try {
 		const {
 			rows: [routine]
@@ -12,7 +12,7 @@ async function getRoutineById(id) {
     `,
 			[id]
 		)
-
+	
 		return routine
 	} catch (error) {
 		console.log(error)
