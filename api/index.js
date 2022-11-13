@@ -5,6 +5,8 @@ const jwt = require("jsonwebtoken")
 const { JWT_SECRET } = process.env
 
 
+
+
 router.use(async (req, res, next) => {
     const prefix = 'Bearer ';
     const auth = req.header('Authorization');
@@ -62,6 +64,10 @@ const routineActivitiesRouter = require('./routineActivities');
 router.use('/routine_activities', routineActivitiesRouter);
 
 
-
+router.use((req, res, next) => {
+   res.status(404).send({
+    message: "Not Found"
+   })
+   })
 
 module.exports = router;

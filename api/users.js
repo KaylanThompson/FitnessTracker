@@ -16,8 +16,8 @@ usersRouter.post("/login", async (req, res, next) => {
   try {
     const user = await getUserByUsername(username)
 
-    if (user.password == password) {
-      console.log("why is this not working?")
+    if (!user.password === password) {
+      res.send({message: "Check your password"})
     }
 
     const token = jwt.sign(
@@ -73,10 +73,8 @@ usersRouter.post("/register", async (req, res, next) => {
         id: user.id,
         username
       },
-      process.env.JWT_SECRET,
-      {
-        expiresIn: "1w"
-      }
+      JWT_SECRET
+
     )
 
     res.send({
