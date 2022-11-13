@@ -19,7 +19,7 @@ activitiesRouter.get('/:activityId/routines', async (req, res, next) => {
         const activity = await getActivityById(id)
         console.log(activity, 'this dont work')
         if(!activity){
-            res.send({error:"this has failed", message:`Activity ${activity} not found`, name: " bob"})
+            res.send({error:"this has failed", message:`Activity ${id} not found`, name: " bob"})
         }
         const routine = await getPublicRoutinesByActivity(activity)
         res.send(routine)
