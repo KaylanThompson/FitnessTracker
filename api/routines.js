@@ -5,10 +5,7 @@ const {
   createRoutine,
   destroyRoutine,
   getRoutineById,
-  getActivityById,
-  attachActivitiesToRoutines,
   getRoutineActivitiesByRoutine,
-  getPublicRoutinesByActivity,
   addActivityToRoutine
 } = require("../db")
 const { requireUser } = require("./utils")
@@ -26,8 +23,7 @@ routinesRouter.post("/", requireUser, async (req, res) => {
   const { creatorId, isPublic, name, goal } = req.body
 
   if (req.user) {
-    
-  try {
+    try {
       await createRoutine({ creatorId, isPublic, name, goal })
 
       res.send({
@@ -87,8 +83,8 @@ routinesRouter.delete("/:routineId", requireUser, async (req, res) => {
       res.statusCode = 403
       res.send({
         message: `User ${req.user.username} is not allowed to delete On even days`,
-        name: "What is this",
-        error: "just another day in paradise"
+        name: "UnauthorizedDelete",
+        error: "Not the user's routine"
       })
     }
   } catch (error) {
@@ -100,40 +96,27 @@ routinesRouter.delete("/:routineId", requireUser, async (req, res) => {
 // POST /api/routines/:routineId/activities
 
 routinesRouter.post("/:routineId/activities", async (req, res) => {
-  const { routineId, activityId, count, duration} = req.body
-
+  const { routineId, activityId, count, duration } = req.body
   const id = req.params.routineId
 
-  
-  
   try {
-    
-      const returnedRoutine = (await getRoutineActivitiesByRoutine({id})).map(element => element.activityId)
-      
+    const returnedRoutine = await getRoutineActivitiesByRoutine({ id })
+    const array = returnedRoutine.map((element) => element.activityId)
 
-
-      if(!returnedRoutine.includes(activityId)) {
-        const newRoutine = await addActivityToRoutine({activityId, count, duration, routineId})
-        console.log(newRoutine, "line 126")
+    if (!array.includes(activityId)) {
+      const newRoutine = await addActivityToRoutine({ activityId, count, duration, routineId })
       res.send(newRoutine)
-
-      } else{
-  
-        res.send({
-          error: "Already Exists",
-          message: `Activity ID ${activityId} already exists in Routine ID ${id}`,
-          name: "Activity Already Exists in Routine"
-        })}
-      
-        
-      
-    
+    } else {
+      res.send({
+        error: "Already Exists",
+        message: `Activity ID ${activityId} already exists in Routine ID ${id}`,
+        name: "Activity Already Exists in Routine"
+      })
+    }
   } catch (error) {
     console.log(error)
-    throw error   
-}
-  
-
+    throw error
+  }
 })
 
 module.exports = routinesRouter
