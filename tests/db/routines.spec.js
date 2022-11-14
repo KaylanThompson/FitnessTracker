@@ -377,7 +377,8 @@ describe("DB Routines", () => {
         name: faker.random.uuid(),
         goal: faker.random.uuid(),
       });
-      const queriedRoutine = await getRoutineById(routine.id);
+      const queriedRoutine = await getRoutineById({id:routine.id});
+ 
       expect(routine).toEqual(queriedRoutine);
     });
   });
