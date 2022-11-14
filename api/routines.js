@@ -24,7 +24,7 @@ routinesRouter.post("/", requireUser, async (req, res) => {
   
   if (req.user) {
     try {
-     await createRoutine({ creatorId, isPublic, name, goal })
+     await createRoutine({isPublic, name, goal })
 
       res.send({
         creatorId: req.user.id,
