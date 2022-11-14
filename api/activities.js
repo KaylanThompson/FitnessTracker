@@ -60,36 +60,73 @@ activitiesRouter.post('/', requireUser, async (req, res, next) => {
 
 // PATCH /api/activities/:activityId
 
-activitiesRouter.patch('/:activityId', requireUser, async (req, res, next) => {
-    const {activityId} = req.params;
-    const {name, description} = req.body;
 
-    const updateFields = {};
 
-    if (name) {
-        updateFields.name = name;
+activitiesRouter.patch("/:activityId", requireUser, async (req, res) => {
+    const id = req.params.activityId
+  
+    try {
+      const activity = await getActivityById(id)
+  
+      if (!activity) {
+        res.send({
+          error: "Activity doesn't exist",
+          message: `Activity ${id} not found`,
+          name: "Activity Doesn't Exist"
+        })
+      }
+  
+      const { name, description } = req.body
+  
+      const activities = await getAllActivities()
+      const activityName = activities.map((e) => e.name)
+      if (activityName.includes(name)) {
+        res.send({
+          message: `An activity with name ${name} already exists`,
+          error: "DuplicateActivity",
+          name: "Duplicate Activity"
+        })
+      } else {
+        const update = await updateActivity({ id, name, description })
+        res.send(update)
+      }
+    } catch (error) {
+      console.log(error, "this what you want?")
+      throw error
     }
-    if (description) {
-        updateFields.description = description;
-    }
+  })
+  
 
-    try{
-        const oldActivity = await getActivityById(activityId);
+// activitiesRouter.patch('/:activityId', requireUser, async (req, res, next) => {
+//     const {activityId} = req.params;
+//     const {name, description} = req.body;
 
-        if (oldActivity.name.id === req.user.id) {
-            const updateActivity = await updateActivity(activityId, updateFields)
-            res.send({activity: updateActivity})
-        } else{
-            next({
-                name: '',
-                message:''
-            })
-        }
-    } catch ({ name, message}) {
-        next({ name, message });
-    }
+//     const updateFields = {};
 
-})
+//     if (name) {
+//         updateFields.name = name;
+//     }
+//     if (description) {
+//         updateFields.description = description;
+//     }
+
+//     try{
+//         const oldActivity = await getActivityById(activityId);
+
+//         if (oldActivity.name.id === req.user.id) {
+//             const updateActivity = await updateActivity(activityId, updateFields)
+//             res.send({activity: updateActivity})
+//         } else{
+//             next({
+//                 name: '',
+//                 message:''
+//             })
+//         }
+//     } catch ({ name, message}) {
+//         next({ name, message });
+//     }
+
+// })
 
 
 module.exports = activitiesRouter;

@@ -20,11 +20,11 @@ routinesRouter.get("/", async (req, res) => {
 // POST /api/routines
 
 routinesRouter.post("/", requireUser, async (req, res) => {
-  const { creatorId, isPublic, name, goal } = req.body
-
+  const { isPublic, name, goal } = req.body
+  
   if (req.user) {
     try {
-      await createRoutine({ creatorId, isPublic, name, goal })
+     await createRoutine({ isPublic, name, goal })
 
       res.send({
         creatorId: req.user.id,

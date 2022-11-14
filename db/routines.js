@@ -1,3 +1,5 @@
+/* eslint-disable no-mixed-spaces-and-tabs */
+/* eslint-disable no-useless-catch */
 const client = require("./client")
 const { attachActivitiesToRoutines } = require("./activities")
 
@@ -132,9 +134,9 @@ async function createRoutine({ creatorId, isPublic, name, goal }) {
 			rows: [routine]
 		} = await client.query(
 			`
-    INSERT INTO routines ("creatorId", "isPublic", name, goal)
+    INSERT INTO routines("creatorId", "isPublic", name, goal)
     VALUES ($1, $2, $3, $4)
-    ON CONFLICT (name) DO NOTHING
+	ON CONFLICT (name) DO NOTHING
     RETURNING *;
     `,
 			[creatorId, isPublic, name, goal]
@@ -142,9 +144,9 @@ async function createRoutine({ creatorId, isPublic, name, goal }) {
 
 		return routine
 	} catch (error) {
-		console.log(error)
 		throw error
 	}
+
 }
 
 async function updateRoutine({ id, ...fields }) {
