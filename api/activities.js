@@ -16,13 +16,18 @@ activitiesRouter.get('/:activityId/routines', async (req, res, next) => {
     console.log(id, "this is id line 10")
 
     try {
-        const activity = await getActivityById(id)
-        console.log(activity, 'this dont work')
-        if(!activity){
-            res.send({error:"this has failed", message:`Activity ${id} not found`, name: " bob"})
+        // const activity = await getActivityById(id)
+        // console.log(activity, 'this dont work')
+        // if(!activity){
+        //     res.send({error:"this has failed", message:`Activity ${id} not found`, name: " already in use"})
+        // }
+        const routine = await getPublicRoutinesByActivity({id})
+        const activityNames = routine.map(e=>e.name)
+        if(activityNames.includes(routine.name)){
+            res.send(routine)
+        }else{
+            res.send({error:"this has failed", message:`Activity ${id} not found`, name: " already in use"})
         }
-        const routine = await getPublicRoutinesByActivity(activity)
-        res.send(routine)
     } catch (error) {
         console.log(error)
         throw error
