@@ -91,7 +91,7 @@ activitiesRouter.patch("/:activityId", requireUser, async (req, res) => {
         res.send(update)
       }
     } catch (error) {
-      console.log(error, "this what you want?")
+      console.log(error)
       throw error
     }
   })
