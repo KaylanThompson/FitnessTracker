@@ -10,29 +10,27 @@ activitiesRouter.get('/', async (req, res ) =>{
 });
 
 // GET /api/activities/:activityId/routines
-activitiesRouter.get('/:activityId/routines', async (req, res, next) => {
-    // const {req.params} = req.body
-    const id = req.params.activityId
-    console.log(id, "this is id line 10")
 
-    try {
-        // const activity = await getActivityById(id)
-        // console.log(activity, 'this dont work')
-        // if(!activity){
-        //     res.send({error:"this has failed", message:`Activity ${id} not found`, name: " already in use"})
-        // }
-        const routine = await getPublicRoutinesByActivity({id})
-        const activityNames = routine.map(e=>e.name)
-        if(activityNames.includes(routine.name)){
+    activitiesRouter.get("/:activityId/routines", async (req, res) => {
+        try {
+          const activity = await getActivityById(req.params.activityId)
+      
+          if (!activity) {
+            res.send({
+              error: "Does Not Exist",
+              message: `Activity ${req.params.activityId} not found`,
+              name: "Activity not found"
+            })
+          } else {
+            const routine = await getPublicRoutinesByActivity(activity)
+      
             res.send(routine)
-        }else{
-            res.send({error:"this has failed", message:`Activity ${id} not found`, name: " already in use"})
+          }
+        } catch (error) {
+          console.log(error)
+          throw error
         }
-    } catch (error) {
-        console.log(error)
-        throw error
-    }
-})
+      })
 
 
 // POST /api/activities

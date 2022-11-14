@@ -41,7 +41,7 @@ describe("/api/activities", () => {
     })
   })
 
-  xdescribe("POST /api/activities (*)", () => {
+  describe("POST /api/activities (*)", () => {
     it("Creates a new activity", async () => {
       const { token } = await createFakeUserWithToken("bob")
 
@@ -82,7 +82,7 @@ describe("/api/activities", () => {
     })
   })
 
-  xdescribe("PATCH /api/activities/:activityId (*)", () => {
+  describe("PATCH /api/activities/:activityId (*)", () => {
     it("Anyone can update an activity (yes, this could lead to long term problems a la wikipedia)", async () => {
       const { token } = await createFakeUserWithToken("Allison")
       const fakeActivity = await createFakeActivity(
