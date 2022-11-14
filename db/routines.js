@@ -101,7 +101,7 @@ async function getAllPublicRoutines() {
 	}
 }
 
-async function getPublicRoutinesByActivity({ id }) {
+async function getPublicRoutinesByActivity( {id} ) {
 	try {
 		const { rows } = await client.query(
 			`
